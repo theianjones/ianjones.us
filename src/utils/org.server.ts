@@ -5,24 +5,42 @@ import findDown from 'vfile-find-down'
 import rename from 'vfile-rename'
 import report from 'vfile-reporter'
 import orgToHtml from './orgToHtml'
-
+import map from 'lodash/map'
+import {last} from 'lodash'
 // We serve posts from "public" directory, so that we don't have to
 // copy assets.
 //
 // If you change this directory, make sure you copy all assets
 // (images, linked files) to the public directory, so that next.js
 // serves them.
-const pagesDirectory = path.join(process.cwd(), 'public')
+const pagesDirectory = path.join(process.cwd(), 'public/org-roam')
 
 const processor = trough()
   .use(collectFiles)
   .use(processPosts)
   .use(populateBacklinks)
 
+interface VFile {
+  data: any
+  messages: any
+  history: string[]
+  cwd: string
+  basename: string
+  dirname: string
+}
+
 function collectFiles(root: any) {
   return new Promise((resolve, reject) => {
     findDown.all(
-      (f: any, stats: any) => stats.isFile() && f.basename.endsWith('.org'),
+      (f: VFile, stats: any) => {
+        const parentDir = last(f.dirname.split('/'))
+        const pagesDir = last(pagesDirectory.split('/'))
+        return (
+          parentDir === pagesDir &&
+          stats.isFile() &&
+          f.basename.endsWith('.org')
+        )
+      },
       root,
       (err: any, files: any) => {
         if (err) {
@@ -32,7 +50,7 @@ function collectFiles(root: any) {
             const slug = '/' + path.relative(root, f.path).replace(/\.org$/, '')
             f.data.slug = slug
           })
-          resolve(files)
+          resolve({...files})
         }
       },
     )
@@ -40,7 +58,7 @@ function collectFiles(root: any) {
 }
 
 async function processPosts(files: any) {
-  return Promise.all(files.map(processPost))
+  return Promise.all(map(files, processPost))
 
   async function processPost(file: any) {
     try {
@@ -62,7 +80,7 @@ async function processPosts(files: any) {
 // called after all pages have been processed---otherwise, it might
 // miss backlinks.
 function populateBacklinks(files: any) {
-  const backlinks = {} as any
+  let backlinks = {} as any
   files.forEach((file: any) => {
     file.data.links = file.data.links || new Set()
     file.data.backlinks = backlinks[file.data.slug] =
@@ -99,7 +117,7 @@ export async function getAllPaths() {
 
 export async function getPostBySlug(slug: string) {
   const posts = await allPosts()
-  const post = await posts[slug]
+  const post = await posts[`/${slug}`]
   return post
 }
 

@@ -1,12 +1,12 @@
 import {join} from 'path'
 import Head from 'next/head'
-
+import axios from 'axios'
 import {getAllPaths, getPostBySlug} from 'utils/org.server'
 
 import Link from 'components/link'
 import Rehype from 'components/rehype'
 import {GetServerSideProps, GetStaticProps} from 'next'
-import {type} from 'node:os'
+import {map} from 'lodash'
 
 const Note = ({title, hast, backlinks}: any) => {
   return (
@@ -14,8 +14,10 @@ const Note = ({title, hast, backlinks}: any) => {
       <Head>
         <title>{title}</title>
       </Head>
-      <h1>{title}</h1>
-      <Rehype hast={hast} />
+      <h1 className="">{title}</h1>
+      <div className="markdown">
+        <Rehype hast={hast} />
+      </div>
       {!!backlinks.length && (
         <section>
           <h2>{'Backlinks'}</h2>
@@ -57,12 +59,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 }) => {
   const slug =
     typeof params?.slug == 'object' ? params?.slug.join('') : params?.slug
-  const path = '/' + join(slug || 'index')
-  const post = await getPostBySlug(path)
-  console.log(post)
+  const {data: post} = (await axios.get('http://localhost:3000/api/github', {
+    params: {slug},
+  })) as any
   const data = post.data
   const backlinks = (await Promise.all(
-    [...data.backlinks].map(getPostBySlug),
+    map(data.backlinks, getPostBySlug),
   )) as Backlink[]
   return {
     props: {
