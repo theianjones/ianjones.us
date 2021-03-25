@@ -1,6 +1,6 @@
 import {join} from 'path'
 import Head from 'next/head'
-import axios from 'axios'
+import axios, {AxiosResponse} from 'axios'
 import {getAllPaths, getPostBySlug} from 'utils/org.server'
 
 import Link from 'components/link'
@@ -10,12 +10,12 @@ import {map} from 'lodash'
 
 const Note = ({title, hast, backlinks}: any) => {
   return (
-    <main>
+    <main className="markdown">
       <Head>
         <title>{title}</title>
       </Head>
       <h1 className="">{title}</h1>
-      <div className="markdown">
+      <div>
         <Rehype hast={hast} />
       </div>
       {!!backlinks.length && (
@@ -59,19 +59,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 }) => {
   const slug =
     typeof params?.slug == 'object' ? params?.slug.join('') : params?.slug
-  const {data: post} = (await axios.get('http://localhost:3000/api/github', {
-    params: {slug},
-  })) as any
+  const {data: post} = (await axios.get(
+    `http://localhost:3000/api/posts/${slug}`,
+  )) as any
   const data = post.data
-  const backlinks = (await Promise.all(
-    map(data.backlinks, getPostBySlug),
-  )) as Backlink[]
+  console.log(data.backlinks)
+
+  const backlinksResponse = (await Promise.all(
+    map(data.backlinks, (id) => {
+      return axios.get(`http://localhost:3000/api/posts${id}`)
+    }),
+  )) as any
+
+  const backlinks = backlinksResponse.map((r: AxiosResponse) => r.data)
   return {
     props: {
       title: data.title || post.basename,
       hast: post.result,
       backlinks: backlinks.map((b) => ({
-        path: b.path,
+        path: b.data.slug,
         title: b.data.title || b.basename,
       })),
     },

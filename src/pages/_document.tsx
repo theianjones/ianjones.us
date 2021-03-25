@@ -7,6 +7,7 @@ import Document, {
   DocumentContext,
 } from 'next/document'
 import {extractCritical} from 'emotion-server'
+import Header from 'components/header'
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -35,7 +36,8 @@ export default class MyDocument extends Document {
             href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/271/cloud-with-lightning-and-rain_26c8-fe0f.png"
           />
         </Head>
-        <body className="dark:bg-gray-800">
+        <body className="dark:bg-gray-800 container">
+          <Header />
           <Main />
           <NextScript />
         </body>

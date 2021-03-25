@@ -1,3 +1,4 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   darkMode: 'class',
   purge: {
@@ -7,13 +8,37 @@ module.exports = {
     },
   },
   theme: {
-    typography: (theme) => ({}),
+    colors: {
+      ...defaultTheme.colors,
+      primary: '#7B14D1',
+      secondary: '#C320D6',
+      muted: '#F7F6F9',
+      orange: '#FFB65C',
+    },
+    fontFamily: {
+      serif: ['Source Serif Pro', ...defaultTheme.fontFamily.serif],
+      sans: ['Avenir Next', 'Open Sans', ...defaultTheme.fontFamily.sans],
+      mono: ['Lato, sans-serif'],
+    },
     extend: {
-      colors: {},
       typography: (theme) => ({
-        dark: {
+        DEFAULT: {
           css: {
-            color: 'white',
+            color: theme('colors.gray.800'),
+            // fontFamily: theme('fontFamily.sans'),
+            'h1, h2': {
+              fontSize: 44,
+              fontWeight: theme('fontWeight.extrabold'),
+              letterSpacing: theme('letterSpacing.tighter'),
+              // fontFamily: theme('fontFamily.heading'),
+            },
+            'h3, h4': {
+              fontWeight: theme('fontWeight.bold'),
+              lineHeight: theme('lineHeight.tight'),
+            },
+            pre: {
+              backgroundColor: '#011627',
+            },
           },
         },
       }),

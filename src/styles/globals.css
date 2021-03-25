@@ -1,3 +1,16 @@
+@import './markdown.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply text-gray-900;
+}
+
+.container {
+  @apply max-w-screen-lg;
+  @apply mx-auto;
+  @apply p-5;
+  @apply pt-0;
+  @apply pb-24;
+}
