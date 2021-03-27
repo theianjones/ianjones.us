@@ -43,12 +43,6 @@ export const getStaticPaths = async () => {
 
 interface Props {}
 
-interface Backlink {
-  path: string
-  data: {title: string}
-  basename: string
-}
-
 export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
   const slug =
     typeof params?.slug == 'object' ? params?.slug.join('') : params?.slug
@@ -61,13 +55,13 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
     }
   }
 
-  const post = await getPost(octokit, slug)
+  const post = await getPost(slug)
   const data = post.data
 
   console.log({post})
   const backlinks = (await Promise.all(
     map(data.backlinks, (id) => {
-      return getPost(octokit, id.replace(/\//, ''))
+      return getPost(id.replace(/\//, ''))
     }),
   )) as any
   return {

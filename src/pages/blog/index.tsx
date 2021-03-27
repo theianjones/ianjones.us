@@ -19,7 +19,7 @@ export default Blog
 interface Props {}
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const posts = await getPosts(octokit)
+  const posts = await getPosts()
 
   return {
     props: {
