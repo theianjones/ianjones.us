@@ -1,10 +1,10 @@
-\*\* Git submodules
+** Git submodules
 
 I use git submodules to host the content of this blog without open sourcing it.
 
 You can add your own sub module by following [[https://www.taniarascia.com/git-submodules-private-content][this blog post by Tania Rascia]].
 
-\*\*\* Important Commands
+*** Important Commands
 
 Make sure the submodule is recursive:
 
