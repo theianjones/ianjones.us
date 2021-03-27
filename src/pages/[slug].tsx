@@ -58,7 +58,6 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
   const post = await getPost(slug)
   const data = post.data
 
-  console.log({post})
   const backlinks = (await Promise.all(
     map(data.backlinks, (id) => {
       return getPost(id.replace(/\//, ''))
