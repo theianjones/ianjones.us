@@ -1,0 +1,3 @@
+[submodule "org-roam"]
+	path = org-roam
+	url = git@github.com:theianjones/org-roam.git

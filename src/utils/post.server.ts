@@ -12,9 +12,11 @@ const cleanUpSlug = (slug: string | string[]) => {
 const getPost = async (slug: string | string[]) => {
   const cleanedSlug = cleanUpSlug(slug)
   const post = await getPostBySlug(cleanedSlug)
-  const backlinks = Array.from(post.data.backlinks)
-  post.data.backlinks = backlinks
-  return post
+  if (post) {
+    const backlinks = Array.from(post.data.backlinks)
+    post.data.backlinks = backlinks
+    return post
+  }
 }
 
 const getPosts = async () => {

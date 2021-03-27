@@ -56,6 +56,16 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
   }
 
   const post = await getPost(slug)
+
+  if (!post) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
   const data = post.data
 
   const backlinks = (await Promise.all(

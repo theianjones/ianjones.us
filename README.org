@@ -1,0 +1,23 @@
+\*\* Git submodules
+
+I use git submodules to host the content of this blog without open sourcing it.
+
+You can add your own sub module by following [[https://www.taniarascia.com/git-submodules-private-content][this blog post by Tania Rascia]].
+
+\*\*\* Important Commands
+
+Make sure the submodule is recursive:
+
+#+begin_src sh
+git config --global submodule.recurse true
+#+end_src
+
+Add a sub module to your repo:
+#+begin_src sh
+git submodule add <repo>
+#+end_src
+
+Update a submodule:
+#+begin_src sh
+git submodule update --remote
+#+end_src
