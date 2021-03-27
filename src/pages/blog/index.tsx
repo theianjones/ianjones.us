@@ -1,15 +1,10 @@
-import {join} from 'path'
+import {GetStaticProps} from 'next'
 import Head from 'next/head'
-import axios from 'axios'
-import {getAllPaths, getPostBySlug} from 'utils/org.server'
-
-import Link from 'components/link'
-import Rehype from 'components/rehype'
-import {GetServerSideProps, GetStaticProps} from 'next'
-import {map} from 'lodash'
+import {getPosts} from 'utils/post.server'
 import Articles from 'components/articles'
+import octokit from 'utils/octokit'
 
-const Note = ({posts}: any) => {
+const Blog = ({posts}: any) => {
   return (
     <main className="text-gray-800 dark:text-gray-300">
       <Head>
@@ -20,16 +15,18 @@ const Note = ({posts}: any) => {
     </main>
   )
 }
-export default Note
+export default Blog
 interface Props {}
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const {data: posts} = (await axios.get(
-    'http://localhost:3000/api/posts/',
-  )) as any
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const posts = await getPosts(octokit)
+
   return {
     props: {
-      posts,
+      posts: posts.map((p: any) => ({
+        title: p?.data.title || p.basename,
+        slug: p?.data.slug,
+      })),
     },
   }
 }
