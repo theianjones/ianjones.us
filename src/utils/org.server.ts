@@ -47,8 +47,9 @@ function collectFiles(root: any) {
           reject(err)
         } else {
           files.forEach((f: any) => {
-            const slug = '/' + path.relative(root, f.path).replace(/\.org$/, '')
+            const slug = path.relative(root, f.path).replace(/\.org$/, '')
             f.data.slug = slug
+            f.data.path = `/${slug}`
           })
           resolve({...files})
         }
@@ -68,7 +69,7 @@ async function processPosts(files: any) {
       throw e
     }
 
-    rename(file, {path: file.data.slug})
+    rename(file, {path: file.data.path})
 
     await orgToHtml(file)
 
@@ -83,12 +84,12 @@ function populateBacklinks(files: any) {
   let backlinks = {} as any
   files.forEach((file: any) => {
     file.data.links = file.data.links || new Set()
-    file.data.backlinks = backlinks[file.data.slug] =
-      backlinks[file.data.slug] || new Set()
+    file.data.backlinks = backlinks[file.data.path] =
+      backlinks[file.data.path] || new Set()
 
     file.data.links.forEach((other: any) => {
       backlinks[other] = backlinks[other] || new Set()
-      backlinks[other].add(file.data.slug)
+      backlinks[other].add(file.data.path)
     })
   })
 }
@@ -117,7 +118,7 @@ export async function getAllPaths() {
 
 export async function getPostBySlug(slug: string) {
   const posts = await allPosts()
-  const post = await posts[`/${slug}`]
+  const post = await posts[slug]
   return post
 }
 

@@ -14,3 +14,7 @@ body {
   @apply pt-0;
   @apply pb-24;
 }
+
+.article-width {
+  width: 550px;
+}
