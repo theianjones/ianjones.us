@@ -1,12 +1,10 @@
-import find from 'lodash/find'
-import {GitHubFile} from '../../types'
 import {getAllPosts, getPostBySlug} from './org.server'
 
 const cleanUpSlug = (slug: string | string[]) => {
   if (typeof slug === 'object') {
-    return slug.join('').replace(/-/, '_')
+    return slug.join('')
   }
-  return slug.replace(/-/, '_')
+  return slug
 }
 
 const getPost = async (slug: string | string[]) => {

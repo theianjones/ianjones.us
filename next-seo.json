@@ -23,7 +23,7 @@
     },
     "images": [
       {
-        "url": "/images/og.jpg",
+        "url": "https://res.cloudinary.com/dzsq0psas/image/upload/v1607107358/1_2x_nih4pm.png",
         "width": 1280,
         "height": 720
       }
