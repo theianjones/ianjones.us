@@ -16,7 +16,7 @@ module.exports = {
       orange: '#FFB65C',
     },
     fontFamily: {
-      serif: ['Source Serif Pro', ...defaultTheme.fontFamily.serif],
+      serif: ['Garamond', ...defaultTheme.fontFamily.serif],
       sans: ['Avenir Next', 'Open Sans', ...defaultTheme.fontFamily.sans],
       mono: ['Lato, sans-serif'],
     },

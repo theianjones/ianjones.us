@@ -1,16 +1,19 @@
 import React from 'react'
 import Link from 'next/link'
+import DarkModeToggle from './dark-mode-toggle'
 
 function Header() {
   return (
     <header className="flex flex-row items-center justify-between pt-24 sm:pt-12 md:pt-16 mb-5">
       {/* <Logo /> */}
       <Link href="/">
-        <img
-          className="h-12"
-          alt="Ian Jones Logo"
-          src="https://res.cloudinary.com/dzsq0psas/image/upload/v1616622188/blog/logo_dgvqfm.png"
-        />
+        <a>
+          <img
+            className="h-12"
+            alt="Ian Jones Logo"
+            src="https://res.cloudinary.com/dzsq0psas/image/upload/v1616622188/blog/logo_dgvqfm.png"
+          />
+        </a>
       </Link>
       <nav className="flex items-center justify-between">
         <Link href={'/courses'}>
@@ -18,9 +21,9 @@ function Header() {
             Courses
           </a>
         </Link>
-        <Link href={'/notes'}>
+        <Link href={'/blog'}>
           <a className="dark:text-gray-300 text-lg font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
-            Articles
+            Blog
           </a>
         </Link>
       </nav>

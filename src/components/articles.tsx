@@ -9,7 +9,7 @@ interface ArticleItemProps {
   article: Post
 }
 
-const ArticleListItem = ({article}: ArticleItemProps) =>
+export const ArticleListItem = ({article}: ArticleItemProps) =>
   article ? (
     <li
       key={article.slug}

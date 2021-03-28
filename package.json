@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "NODE_ENV=production next build",
     "postbuild": "NODE_ENV=production next-sitemap",
+    "build:content": "git submodule update --remote",
     "start": "next start",
     "test": "jest --watch"
   },
@@ -46,6 +47,7 @@
     "@babel/plugin-transform-react-jsx": "^7.12.16",
     "@emotion/babel-preset-css-prop": "^10.2.1",
     "@mdx-js/loader": "^1.6.22",
+    "@tailwindcss/jit": "^0.1.16",
     "@tailwindcss/typography": "^0.4.0",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",

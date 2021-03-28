@@ -13,7 +13,7 @@ import {last} from 'lodash'
 // If you change this directory, make sure you copy all assets
 // (images, linked files) to the public directory, so that next.js
 // serves them.
-const pagesDirectory = path.join(process.cwd(), 'public/org-roam')
+const pagesDirectory = path.join(process.cwd(), 'org-roam')
 
 const processor = trough()
   .use(collectFiles)
@@ -106,9 +106,18 @@ const loadPosts = async () => {
   return posts
 }
 
+let postsCache: any
+
 const allPosts = async () => {
+  if (postsCache) {
+    return postsCache
+  }
   const posts = await loadPosts()
   return posts
+}
+
+if (!postsCache) {
+  allPosts().then((posts) => (postsCache = posts))
 }
 
 export async function getAllPaths() {
