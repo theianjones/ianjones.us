@@ -1,7 +1,7 @@
 {
   "title": "Ian's Digital Garden",
   "titleTemplate": "%s | Ian",
-  "description": "This is where I describe my thoughts and feelings",
+  "description": "Fullstack developer focused on React.JS and Ruby on Rails.",
   "favicon": "/favicon.ico",
   "additionalMetaTags": [
     {"property": "author", "content": "Ian Jones"},

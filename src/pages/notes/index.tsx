@@ -26,6 +26,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       posts: posts.map((p: any) => ({
         title: p?.data.title || p.basename,
         slug: p?.data.slug,
+        path: p?.data.path,
       })),
     },
   }

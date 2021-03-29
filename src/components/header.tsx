@@ -17,12 +17,12 @@ function Header() {
       </Link>
       <nav className="flex items-center justify-between">
         <Link href={'/courses'}>
-          <a className="dark:text-gray-300 mr-3 text-lg font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
+          <a className="dark:text-gray-300 mr-3 prose-xl font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
             Courses
           </a>
         </Link>
         <Link href={'/blog'}>
-          <a className="dark:text-gray-300 text-lg font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
+          <a className="dark:text-gray-300 prose-xl font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
             Blog
           </a>
         </Link>

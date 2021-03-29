@@ -1,3 +1,19 @@
+** Set up
+
+If you are cloning this, you will need to do a couple things:
+
+1. add a git submodule to this repo (steps below)
+2. create ~.env.local~ by copying the values from ~.env.template~.
+
+~ORG_ROAM_SUBMODULE_DIRECTORY~ is the name of the submodule directory you cloned in the previous step.
+
+~PUBLISHED_ATTRIBUTE~ is the attribute on you ~.org~ file that indicates you want this project to source the file. Something like this:
+
+#+begin_src
+#+title: title of your post
+#+published: true
+#+end_src
+
 ** Git submodules
 
 I use git submodules to host the content of this blog without open sourcing it.
@@ -21,3 +37,7 @@ Update a submodule:
 #+begin_src sh
 git submodule update --remote
 #+end_src
+
+** Notes Prefix
+
+You can control the prefix you publish your notes under with ~NOTES_PREFIX~. The default is set to ~/notes~
