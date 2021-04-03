@@ -1,0 +1,23 @@
+[
+  {
+    "title": "epicreact.dev",
+    "image": "https://res.cloudinary.com/dzsq0psas/image/upload/v1617477696/blog/Image_2021-04-03_at_2.45.56_PM_byuoji.png",
+    "description": "This project was a blast (🤦‍♂️) to work on. \n\nI built a state machine to keep track of commerce transaction state integrating with the Stripe API. Read more about my approach to building this component.",
+    "tags": ["react", "xstate"],
+    "url": "https://epicreact.dev"
+  },
+  {
+    "title": "egghead.io",
+    "image": "https://res.cloudinary.com/dzsq0psas/image/upload/v1617477702/blog/Image_2021-04-03_at_2.47.56_PM_luuqqv.png",
+    "description": "I’ve worked on egghead for the past 5 years of my career. I’ve helped build out our HATEOAS API using Ruby on Rails to do so. I’ve worked with integrating many different services such as Stripe, Convertkit and Transloadit.",
+    "tags": ["ruby", "react"],
+    "url": "https://egghead.io"
+  },
+  {
+    "title": "GraphQL Course",
+    "image": "https://res.cloudinary.com/dzsq0psas/image/upload/v1617477726/blog/Image_2021-04-03_at_3.22.01_PM_lqa2ua.png",
+    "description": "I teamed up with the egghead.io production team to produce this GraphQL course. I take the learner from very little GraphQL knowledge to using mutations and subscriptions to build a real time messaging application.",
+    "tags": ["graphql", "react"],
+    "url": "https://egghead.io/courses/react-real-time-messaging-with-graphql-using-urql-and-onegraph-be5a"
+  }
+]

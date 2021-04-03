@@ -14,7 +14,7 @@ export const ArticleListItem = ({article}: ArticleItemProps) =>
   article ? (
     <li
       key={article.slug}
-      className="dark:text-gray-300 dark:hover:text-purple-500 flex-grow py-3 px-2 rounded hover:shadow-lg hover:text-purple-800 cursor-pointer transition ease-in-out duration-300 transform hover:scale-105  text-gray-800"
+      className="dark:text-gray-300 dark:hover:text-purple-500 flex-grow py-3 px-2 rounded hover:shadow-lg hover:text-purple-800 cursor-pointer transition ease-in-out duration-300 transform hover:scale-105  text-gray-800 hover:bg-white"
     >
       <a href={article.path}>{article?.title}</a>
     </li>

@@ -1,10 +1,8 @@
 import React from 'react'
 import Head from 'next/head'
 import {getAllPaths} from 'utils/org.server'
-import octokit from 'utils/octokit'
-import Link from 'components/link'
 import Rehype from 'components/rehype'
-import {GetServerSideProps, GetStaticProps} from 'next'
+import {GetStaticProps} from 'next'
 import {last, map} from 'lodash'
 import Articles from 'components/articles'
 import {getPost} from 'utils/post.server'
@@ -18,7 +16,7 @@ const Note = ({title, hast, resourceLink, backlinks}: any) => {
       <main className="">
         <h1
           className={`text-4xl md:text-5xl my-12 text-gray-800 font-sans ${
-            resourceLink ? 'mb-0' : 'mb-6'
+            resourceLink ? 'mb-3' : 'mb-6'
           }`}
         >
           {title}
@@ -35,7 +33,7 @@ const Note = ({title, hast, resourceLink, backlinks}: any) => {
         </div>
       </main>
       {!!backlinks?.length && (
-        <section className="article-width">
+        <section className="article-width bg-purple-50 p-4 rounded">
           <h2 className="prose-xl">Backlinks</h2>
           <Articles articles={backlinks} />
         </section>

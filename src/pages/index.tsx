@@ -5,6 +5,7 @@ import Courses from 'components/courses'
 import Socials from 'components/socials'
 import Image from 'next/image'
 import nextSeo from '../../next-seo.json'
+import Projects from 'components/projects'
 export default function Home() {
   return (
     <main>
@@ -15,7 +16,7 @@ export default function Home() {
 
       <section className="my-24 flex flex-row">
         <div>
-          <h1 className="text-4xl md:text-5xl font-semibold text-gray-800 dark:text-gray-100 font-sans">
+          <h1 className="text-4xl md:text-5xl font-semibold text-gray-800 dark:text-gray-100 font-serif">
             {nextSeo.description}
           </h1>
           <p className="mt-12 prose-xl  dark:text-gray-300 md:w-3/4 w-100">
@@ -36,14 +37,14 @@ export default function Home() {
         </div>
       </section>
       <section className="my-20">
-        <h2 className="text-gray-500 dark:text-gray-300 font-light text-4xl md:text-5xl mb-5 text-center md:text-justify">
-          Featured Articles
+        <h2 className="text-gray-700 dark:text-gray-300 font-light text-4xl md:text-5xl mb-5 text-center md:text-justify">
+          Featured Projects
         </h2>
-        {/* <Articles articles={data.featuredArticles} /> */}
+        <Projects />
       </section>
       <section className="my-20">
-        <h2 className="text-gray-500 dark:text-gray-300 text-4xl md:text-5xl mb-4 text-center md:text-justify">
-          Video Courses
+        <h2 className="text-gray-700 dark:text-gray-300 text-4xl md:text-5xl mb-4 text-center md:text-justify">
+          Featured Articles
         </h2>
         <Courses />
       </section>
