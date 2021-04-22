@@ -3,6 +3,7 @@ const withMDX = require('@next/mdx')()
 const shiki = require('rehype-shiki')
 const nextConfig = {
   reactStrictMode: true,
+  target: 'serverless',
   async redirects() {
     return []
   },
