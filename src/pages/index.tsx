@@ -3,6 +3,7 @@ import Head from 'next/head'
 import DarkModeToggle from '../components/dark-mode-toggle'
 import Courses from 'components/courses'
 import Socials from 'components/socials'
+import Articles from 'components/articles'
 import Image from 'next/image'
 import nextSeo from '../../next-seo.json'
 import Projects from 'components/projects'
@@ -41,6 +42,25 @@ export default function Home() {
           Featured Projects
         </h2>
         <Projects />
+      </section>
+      <section className="my-20">
+        <h2 className="text-gray-700 dark:text-gray-300 font-light text-4xl md:text-5xl mb-5 text-center md:text-justify">
+          Featured Articles
+        </h2>
+        <Articles
+          articles={[
+            {
+              title: 'Own Your Second Brain 🧠',
+              slug: 'own-your-second-brain',
+              path: '/own-your-second-brain',
+            },
+            {
+              title: 'How XState Saved Our Bacon 🥓',
+              slug: 'xstate-saves-our-bacon',
+              path: '/xstate-saves-our-bacon',
+            },
+          ]}
+        />
       </section>
       <section className="my-20">
         <h2 className="text-gray-700 dark:text-gray-300 text-4xl md:text-5xl mb-4 text-center md:text-justify">
