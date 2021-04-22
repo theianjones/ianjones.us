@@ -1,4 +1,9 @@
+# *
 User-agent: *
 Allow: /
-Host: undefined
-Sitemap: undefined/sitemap.xml
+
+# Host
+Host: https://ianjones.us
+
+# Sitemaps
+Sitemap: https://ianjones.us/sitemap.xml
