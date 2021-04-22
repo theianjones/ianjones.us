@@ -15,7 +15,7 @@ const Note = ({title, hast, resourceLink, backlinks}: any) => {
       </Head>
       <main className="">
         <h1
-          className={`text-4xl md:text-5xl my-12 text-gray-800 dark:text-gray-300 font-sans ${
+          className={`text-5xl md:text-5xl font-semibold my-12 text-gray-800 dark:text-gray-300 font-sans ${
             resourceLink ? 'mb-3' : 'mb-6'
           }`}
         >
