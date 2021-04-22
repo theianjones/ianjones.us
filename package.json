@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "yarn build:content",
     "build": "NODE_ENV=production next build",
     "postbuild": "NODE_ENV=production next-sitemap",
     "build:content": "git submodule update --remote",
