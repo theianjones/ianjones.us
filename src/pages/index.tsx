@@ -44,7 +44,7 @@ export default function Home() {
       </section>
       <section className="my-20">
         <h2 className="text-gray-700 dark:text-gray-300 text-4xl md:text-5xl mb-4 text-center md:text-justify">
-          Featured Articles
+          Video Courses
         </h2>
         <Courses />
       </section>

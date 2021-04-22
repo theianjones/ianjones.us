@@ -1,0 +1,509 @@
+# How State Machines Saved our Bacon 🥓
+
+## useEffect Overload
+
+egghead is the CMS, sale provider, and authentication for what we call Wes Bos as a Service (WBaaS) sites. This includes TestingJavaScript.com, PureReact.com, and now EpicReact.dev.
+
+When we set out to build EpicReact.dev, we knew what we were doing. We've built 2 of these sites before and had handled authentication and purchasing. I figured it was time to extract the purchasing code out of these sites into its own package.
+
+I used [[tsdx]] because it's a great way to author libraries and who doesn't like some [[TypeScript]]. This process went well. I was enjoying the benefits TypeScript gives you.
+
+Heres a quick explanation of the commerce package. It was one big `useReducer`. I had state that relied on other elements of my state, and [as Kent says](https://kentcdodds.com/blog/should-i-usestate-or-usereducer), this is the time to `useReducer`.
+
+The api of our hook was like this:
+
+```js
+const {
+  notification,
+  parityCoupon,
+  countryName,
+  onApplyParityCoupon,
+  displayParityCouponOffer,
+  error,
+  onPurchaseComplete,
+  displayPrice,
+  seriesPackageLoading,
+  showClaimCoupon,
+  purchasing,
+  clearNotifications,
+  appliedCoupon,
+} = usePackage({
+  sellable,
+  quantity: 1,
+  authToken: () => {},
+})
+```
+
+You can tell that theres a lot going on under the hood. We passed a `sellable`, `quantity`, and `authToken` to the hook. A sellable is something that has a `price` and a url on the object to check that price along with a url to make the purchase.
+
+For the internals, heres the stack of hooks that I ended up with:
+
+- useAvailableCoupons.tsx
+- useCouponFromHeader.tsx
+- useDefaultCoupon.tsx
+- useFetchPackageForSellable.tsx
+- usePackage.tsx
+- usePackageCheckout.tsx
+- usePackageReducer.tsx
+- useParityCoupon.tsx
+- useRequest.tsx
+
+`usePackage` is the hook that orchestrated everything. The basic flow was:
+
+1. receive a `sellable` from props
+2. instantiate initial state
+3. fetch the current price of the sellable
+4. check for an applied coupon
+5. extract available coupons
+6. extract purchase power parity (PPP) coupon
+7. create a function to handle purchase complete
+8. create a function for when the coupon is applied
+9. return display price, functions, and other relevant data
+
+The main areas being: load the most recent price, handle any available coupons, give the user of the hook information about everything that's happening.
+
+Most of these hooks are use effects waiting for changes of the particular state they manage. Lets take a look at the `useParityCoupon` hook:
+
+```js
+const useParityCoupon = (
+  dispatch: DispatchType,
+  availableCoupons?: CouponType[],
+) => {
+  React.useEffect(() => {
+    const parityCoupon = find(availableCoupons, {
+      coupon_region_restricted: true,
+    })
+    if (parityCoupon) {
+      const countryCode = get(parityCoupon, 'coupon_region_restricted_to')
+      const countryName = get(parityCoupon, 'coupon_region_restricted_to_name')
+      const displayParityCouponOffer = !(
+        isEmpty(countryName) ||
+        isEmpty(countryCode) ||
+        isEmpty(parityCoupon)
+      )
+
+      dispatch({
+        type: SET_PARITY_COUPON,
+        displayParityCouponOffer,
+        parityCoupon,
+        countryName,
+      })
+    }
+  }, [availableCoupons])
+}
+```
+
+You may notice one of the bugs that was in our purchase flow. `availableCoupons` is of type `CouponType[]` which _is not a stable value_. React will shallowly compare this reference. When this hook runs again, `availableCoupons` will always be different. These hooks were scattered with issues like this. This is one of the foot guns that made debugging these hooks difficult.
+
+I ran into issues testing this code in EpicReact. One being, the parity coupon was not being set when it should have been. When the value you expect to be there isn't, you have to go inspect what could be affecting it. In this case, I had to inspect these hooks:
+
+- usePackage.tsx
+- useFetchPackageForSellable.tsx
+- useAvailableCoupons.tsx
+- usePackageReducer.tsx
+- useParityCoupon.tsx
+
+Tracing the data through all of these hooks is a nightmare. First you check if `usePackage` is calling `useParityCoupon` correctly. Next, we have to check if the values from `useFetchPackageForSellable` are setting state in `usePackageReducer` correctly. Then I had to make sure that `useAvailableCoupons` set the coupons correctly and finally that `useParityCoupon` was sending the correct event when it was supposed to. This took a lot of `debugger` and `console.log` statements to just figure out what the flow of data was.
+
+On top of this, we have to make sure that when the user applies the PPP coupon, we refetch the price all over again.
+
+All of this had to be stored in my head before I could start making any changes.
+
+## XState Saves the Day
+
+One of the first things you will notice when using the XState version of this hook is how much simpler the api is:
+
+```js
+const [state, send] = useCommerceMachine({
+  sellable: bundle,
+})
+```
+
+XState just needs the `sellable` to kick off the price checking process.
+
+XState forces you to think about your discreet states. Theres a big difference between the `context` you have around your state machine and the `states` your machine can be in.
+
+Everything I described above can be boiled down into these states:
+
+- fetchingPrice
+- priceLoaded
+- startingPurchase
+- handlingPurchase
+- success
+- failure
+
+We use these states to build up the `context` of our state machine. This is what we want to track in our state machine:
+
+- sellable
+- purchaseHeaders
+- error: null
+- price: null
+- appliedCoupon: null
+- notification: null
+- email: null
+- stripeToken: null
+- quantity: 1
+- purchase: null
+
+As you can see `sellable` and `purchaseHeaders` are all passed in from a closure above. Heres what the basic state machine with no transitions looks like:
+
+```js
+const createCommerceMachine = ({sellable, purchaseHeaders}) =>
+  createMachine(
+    {
+      id: 'commerceMachine',
+      initial: 'fetchingPrice',
+      context: {
+        sellable,
+        purchaseHeaders,
+        error: null,
+        price: null,
+        appliedCoupon: null,
+        notification: null,
+        email: null,
+        stripeToken: null,
+        quantity: 1,
+        purchase: null,
+      },
+      states: {
+        fetchingPrice: {},
+        checkingPriceData: {},
+        priceLoaded: {},
+        startingPurchase: {},
+        handlingPurchase: {},
+        success: {},
+        failure: {},
+      },
+    },
+    {
+      guards: {},
+      actions: {},
+    },
+  )
+```
+
+You may notice that this `createCommerceMachine` function takes more arguments than our `useCommerceMachine` hook and thats because we create an intermediate hook to load authentication and such:
+
+```js
+export const useCommerceMachine = ({sellable}) => {
+  const {user, authToken} = useEggheadUser()
+  const sellableSlug = get(sellable, 'slug')
+  const userId = get(user, 'id')
+  const commerceMachine = React.useMemo(() => {
+    const purchaseHeaders = authToken()
+      ? {Authorization: `Bearer ${authToken()}`}
+      : {}
+    return createCommerceMachine({
+      sellable,
+      purchaseHeaders,
+      stripeToken: process.env.STRIPE_TOKEN,
+    })
+  }, [sellableSlug, userId])
+
+  return useMachine(commerceMachine)
+}
+```
+
+We are memoizing our call to `createCommerceMachine` because we only want to create a new machine if the `sellableSlug` or the `userID` has changed.
+
+The first machine initializes in the `fetchingPrice` state. This is a state that is invoking a promise ([xstate docs](https://xstate.js.org/docs/guides/communication.html#invoking-promises)). A state can invoke a number of services but in our case we are using a promise. Heres the overview of the state:
+
+```js
+fetchingPrice: {
+	invoke: {
+		id: 'fetchPrice',
+		src: (context, event) => {// return a promise here},
+		onDone: {
+		  target: 'checkingPriceData',
+		  actions: [// do something with the resulting data],
+		},
+		onError: {
+		  target: 'failure',
+		  actions: [// do something if the promise throws an error]
+		},
+ 	},
+}
+```
+
+You can see that `invoke` takes a `src` promise. XState will handle calling this function and handing the resulting data to `onDone` or `onError`. This is where we calculate the `context.price` object.
+
+```js
+onDone: {
+  target: 'checkingPriceData',
+  actions: [
+  	assign({
+	  price: (context, event) => event.data[0],
+	}),
+	'adjustPriceForUpgrade',
+  ],
+},
+```
+
+We use XState's `assign` function to take the data that the `event` gave back and `assign` it to the price. We have to handle a case where we adjust the price if the user is upgrading a purchase. I do this in separate action because I like to see all the different things that are happening when I read the machine. You could technically do this action in the `assign` above, but then you aren't optimizing for deletion.
+
+The next state is `checkingPriceData`:
+
+```js
+checkingPriceData: {
+  always: [
+	{
+	  target: 'failure',
+	  cond: 'couponErrorIsPresent',
+	  actions: ['setErrorFromCoupon'],
+	},
+	{target: 'priceLoaded', actions: ['checkForDefaultCoupon']},
+  ],
+},
+```
+
+This is a transient state. We use `always` to make a transient transition ([xstate docs](https://xstate.js.org/docs/guides/transitions.html#transient-transitions)). This is a spot in our state machine where if some condition is true with the current context, we want to conditionally send it to another state. The first condition to return true will be the transition that's executed. The default is to send to `priceLoaded` state because there is no condition preventing this from happening.
+
+We defined our `couponErrorIsPresent` guard in our `guards` object below.
+
+```js
+guards: {
+	couponErrorIsPresent: (context, event) => {
+	  return context?.price?.coupon_error
+	},
+},
+```
+
+All it needs to do is return true or false. We check the specific data we need to see if a `coupon_error` is present. If it is, we use `setErrorFromCoupon` to set the `error` context:
+
+```js
+setErrorFromCoupon: assign({
+  error: (context, event) => context.price.price_message,
+}),
+```
+
+This allows our UI to check the state of our machine and our context to determine if it needs to display an error.
+
+Moving along, we assume that our price check didnt return a coupon error, we move into the `priceLoaded` state. This is the last state our machine will automatically transition to until it receives an event from the outside telling to to transition to another state. Heres everything the outside world can tell our state machine to do:
+
+```js
+priceLoaded: {
+  on: {
+	APPLY_COUPON: {
+	  target: 'fetchingPrice',
+	  actions: [
+		assign({
+		  appliedCoupon: (context, event) => event.appliedCoupon,
+		}),
+	  ],
+	},
+	DISMISS_COUPON: {
+	  target: 'fetchingPrice',
+	  actions: [
+		assign({
+		  appliedCoupon: null,
+		}),
+	  ],
+	},
+	SET_QUANTITY: {
+	  target: 'fetchingPrice',
+	  actions: [
+		assign({
+		  quantity: (context, event) => event.quantity,
+		  appliedCoupon: null,
+		}),
+	  ],
+	},
+	START_PURCHASE: {
+	  target: 'startingPurchase',
+	},
+	CLAIM_COUPON: {
+	  target: 'handlingPurchase',
+	  actions: [
+		assign({
+		  email: (context, event) => event.email,
+		}),
+	  ],
+	},
+  },
+},
+
+```
+
+You'll notice that `APPLY_COUPON`, `DISMISS_COUPON`, and `SET_QUANTITY` all just send the machine back to the `fetchingPrice` state. This is one of the benefites of XState. We can reuse our logic on how we fetch the price but give it a slightly different `context`.
+
+Say our machine recieves the `APPLY_COUPON` event. This event comes with `appliedCoupon`. You can see that we are using `assign` to add the `appliedCoupon` from the event into our context:
+
+```js
+assign({
+  appliedCoupon: (context, event) => event.appliedCoupon,
+}),
+```
+
+Then our machine transitions back into the `fetchingPrice` state. I mentioned earlier that `fetchingPrice` `invokes` a promise for us. Heres what the promise looks like:
+
+```js
+fetchingPrice: {
+  invoke: {
+	id: 'fetchPrice',
+	src: (context, event) => {
+	  const {
+		quantity,
+		appliedCoupon,
+		sellable,
+	  } = context
+	  const {
+		priceCheckURL,
+		site,
+		egghead_id: sellable_id,
+		type,
+	  } = sellable
+	  return axios
+		.post(
+		  priceCheckURL,
+		  pickBy({
+			sellables: [
+			  {
+				site,
+				sellable_id,
+				sellable: type.toLowerCase(),
+				quantity,
+			  },
+			],
+			site,
+			code: appliedCoupon,
+		  }),
+		)
+		.then(({data}) => data)
+	},
+	onDone: {},
+	onError: {},
+  },
+```
+
+You can see that we are grabbing `quantity`, `appliedCoupon`, `sellable`, and `upgradeFromSellable` from our `context` and passing some of those values to the body of our `axios.post` call. This is how we can reuse our `fetchingPrice` state, with different `context` to fetch prices when no coupon is applied, when we've applied a coupon, or even when the quantity we are asking for has changed.
+
+When the user wants to start a purchase, we receive a `START_PURCHASE` event. This event simply transitions us to the `startingPurchase` state. We have this state so that we know when the user has clicked the "Purchase" button and a modal to accept their info is been created.
+
+While in the `startingPurchase` state, we can do two things:
+
+```js
+startingPurchase: {
+  on: {
+	CANCEL_PURCHASE: {
+	  target: 'priceLoaded',
+	},
+	HANDLE_PURCHASE: {
+	  target: 'handlingPurchase',
+	  actions: [
+		assign({
+		  email: (context, event) => event.email,
+		  stripeToken: (context, event) => event.stripeToken,
+		}),
+	  ],
+	},
+  },
+},
+```
+
+We can either cancel the purchase and return to `priceLoaded` or the user has entered their data and is attempting a purchase that we need to handle. In our case, we contact stripe for a token and then get the email that they entered. This is all we need to kick off our purchase process.
+
+`handlingPurchase` is a state that `invokes` a promise to `POST` data to our purchases api endpoint:
+
+```js
+handlePurchase: {
+  invoke: {
+	id: 'handlePurchase',
+	src: (context, event) => {// return promise that makes the purchase},
+	onDone: {
+	  target: 'success',
+	  actions: [
+		assign({
+		  purchase: (context, event) => event.data,
+		}),
+		'sendToThanks',
+	  ],
+	},
+	onError: {
+	  target: 'failure',
+	  actions: assign({
+		error: (context, event) => {
+		  return event?.data?.response?.data?.error
+		},
+	  }),
+	},
+  },
+},
+```
+
+This is the same process we've described. We can either transition to `success` or `failure` based on the response of the purchase promise. If the purchase was successful, our specific UX is that we send the user to a `/thanks` page.
+
+State machines are verbose. I haven't described every feature this machine does but in total, this file is 314 lines long. XState forces you to map our all our states and transitions explicitly. This affords you the ability to know exactly when something is happening.
+
+Earlier, when I had a problem with my custom `usePackage` hook, I would have to follow all the hook calls to track the data and when things happened. In this case, say I am trying to apply a coupon but my machine loads the price, and the request comes back with a price I didn't expect. I can go to my machine and know exactly where coupons get applied to check if it's applied correctly and exactly where the coupon is being used in the request. There's no guessing involved.
+
+As feature requests come in, it's much easier to know exactly where they fit in. Say we want to add a feature so that the user can upgrade from one package to another. We need to send the package we are upgrading from to the server. We know we'll need to pass that package in from react:
+
+```js
+const [state, send] = useCommerceMachine({
+  sellable: bundle,
+  upgradeFromSellable,
+})
+```
+
+Then we know that we will need this object in our context inside of our machine so we can use it when we are fetching our price.
+
+```js
+const createCommerceMachine = ({
+  sellable,
+  purchaseHeaders,
+  upgradeFromSellable,
+}) =>
+  createMachine(
+    {
+      id: 'commerceMachine',
+      initial: 'fetchingPrice',
+      context: {
+        sellable,
+        purchaseHeaders,
+        upgradeFromSellable,
+       // ...
+      },
+	  // ...
+)
+```
+
+Now we can use this `upgradeFromSellable` object in our `fetchingPrice` promise.
+
+```js
+fetchingPrice: {
+  invoke: {
+	id: 'fetchPrice',
+	src: (context, event) => {
+	  const {
+		sellable,
+		upgradeFromSellable,
+		// ...
+	  } = context
+	  const {
+		// ...
+	  } = sellable
+	  return axios
+		.post(
+		  priceCheckURL,
+		  pickBy({
+			sellables: [
+			  {
+				upgrade_from_sellable_id: upgradeFromSellable?.slug,
+				upgrade_from_sellable: upgradeFromSellable?.type,
+				// ...
+			  },
+			],
+			// ...
+		  }),
+		)
+		.then(({data}) => data)
+	},
+	onDone: {// assign the returned price},
+	onError: {// assign the error},
+  },
+},
+```
+
+There's no guessing involved in where we need to put this object to affect our prices call.
+
+There is always state our UI's are dealing with, even if we are explicitly modeling it. State machines force you to model how you want your state to act and what can change the state in your machine. State machines expose the implicit state that you may or may not have known was there.

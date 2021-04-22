@@ -47,9 +47,14 @@
 
 /* Links */
 
+.dark .markdown a {
+  --tw-text-opacity: 1;
+  @apply text-purple-400;
+}
+
 .markdown a {
   --tw-text-opacity: 1;
-  color: rgba(124, 58, 237, var(--tw-text-opacity));
+  @apply text-purple-700;
 }
 
 .markdown a:hover {
@@ -378,7 +383,19 @@
 
 .markdown p > code {
   --tw-bg-opacity: 1;
-  background-color: rgba(229, 231, 235, var(--tw-bg-opacity));
+  @apply bg-purple-200;
+  border-color: transparent;
+  border-radius: 0.125rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 3px 4px 1px 4px;
+}
+
+.dark .markdown p > code {
+  --tw-bg-opacity: 1;
+  @apply bg-purple-400;
+  @apply text-gray-700;
   border-color: transparent;
   border-radius: 0.125rem;
   font-weight: 600;

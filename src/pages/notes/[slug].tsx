@@ -15,7 +15,7 @@ const Note = ({title, hast, resourceLink, backlinks}: any) => {
       </Head>
       <main className="">
         <h1
-          className={`text-4xl md:text-5xl my-12 text-gray-800 font-sans ${
+          className={`text-4xl md:text-5xl my-12 text-gray-800 dark:text-gray-300 font-sans ${
             resourceLink ? 'mb-3' : 'mb-6'
           }`}
         >
@@ -28,13 +28,13 @@ const Note = ({title, hast, resourceLink, backlinks}: any) => {
             </a>
           </div>
         )}
-        <div className="markdown article-width">
+        <div className="markdown article-width dark:text-gray-300">
           <Rehype hast={hast} />
         </div>
       </main>
       {!!backlinks?.length && (
-        <section className="article-width bg-purple-50 p-4 rounded">
-          <h2 className="prose-xl">Backlinks</h2>
+        <section className="article-width bg-purple-50 dark:bg-gray-800 p-4 rounded">
+          <h2 className="prose-xl dark:text-gray-400">Backlinks</h2>
           <Articles articles={backlinks} />
         </section>
       )}
@@ -66,7 +66,6 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
     }
   }
 
-  console.log({slug})
   const post = await getPost(slug)
 
   if (!post) {
@@ -79,7 +78,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
   }
 
   const data = post.data
-  console.log(data)
+
   const backlinks = (await Promise.all(
     map(data.backlinks, (path: string) => {
       if (path) {

@@ -1,6 +1,6 @@
 const withPlugins = require('next-compose-plugins')
 const withMDX = require('@next/mdx')()
-
+const shiki = require('rehype-shiki')
 const nextConfig = {
   reactStrictMode: true,
   async redirects() {
@@ -17,7 +17,15 @@ module.exports = withPlugins(
         require('remark-footnotes'),
         require('remark-code-titles'),
       ],
-      rehypePlugins: [require('mdx-prism')],
+      rehypePlugins: [
+        [
+          shiki,
+          {
+            theme: './code-theme.json',
+            useBackground: false,
+          },
+        ],
+      ],
     }),
   ],
   nextConfig,

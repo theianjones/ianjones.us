@@ -21,9 +21,9 @@ function Header() {
             Courses
           </a>
         </Link>
-        <Link href={'/blog'}>
+        <Link href={'/notes'}>
           <a className="dark:text-gray-300 prose-xl font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
-            Blog
+            Notes
           </a>
         </Link>
       </nav>
