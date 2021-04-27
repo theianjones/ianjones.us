@@ -1,5 +1,5 @@
 import SideNote from './side-note'
-
+import Code from './code'
 export default {
   SideNote,
   wrapper: (props: any) => (
@@ -7,4 +7,5 @@ export default {
       <main {...props} className="article-width" />
     </div>
   ),
+  code: Code,
 }
