@@ -15,7 +15,7 @@ const Note = ({title, hast, resourceLink, backlinks}: any) => {
       </Head>
       <main className="">
         <h1
-          className={`text-5xl md:text-5xl font-semibold my-12 text-gray-800 dark:text-gray-300 font-sans ${
+          className={`text-5xl md:text-5xl font-semibold my-12 text-gray-800 dark:text-gray-300 font-serif ${
             resourceLink ? 'mb-3' : 'mb-6'
           }`}
         >
@@ -89,6 +89,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
       }
     }),
   )) as any
+
   return {
     props: {
       title: data.title || post.basename,

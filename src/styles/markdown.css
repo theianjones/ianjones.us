@@ -143,7 +143,7 @@
   margin-top: 1em;
 }
 
-.markdown p code {
+/* .markdown p code {
   font-size: 0.8888889em;
 }
 
@@ -153,9 +153,9 @@
 
 .markdown p h3 code {
   font-size: 0.875em;
-}
+} */
 
-.markdown p pre {
+/* .markdown p pre {
   font-size: 0.8888889em;
   line-height: 1.75;
   margin-top: 2em;
@@ -165,7 +165,7 @@
   padding-right: 1.5em;
   padding-bottom: 1em;
   padding-left: 1.5em;
-}
+} */
 
 .markdown p ol {
   margin-top: 1.3333333em;
@@ -371,7 +371,7 @@
 
 /* Code in titles */
 
-.markdown code {
+/* .markdown code {
   --tw-border-opacity: 1;
   border-color: rgba(229, 231, 235, var(--tw-border-opacity));
   border-bottom-width: 2px;
@@ -381,7 +381,7 @@
 
 /* Code in paragraphs */
 
-.markdown p > code {
+/* .markdown p > code {
   --tw-bg-opacity: 1;
   @apply bg-purple-200;
   border-color: transparent;
@@ -390,9 +390,9 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   padding: 3px 4px 1px 4px;
-}
+} */
 
-.dark .markdown p > code {
+/* .dark .markdown p > code {
   --tw-bg-opacity: 1;
   @apply bg-purple-400;
   @apply text-gray-700;
@@ -402,7 +402,7 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   padding: 3px 4px 1px 4px;
-}
+} */
 
 /* iframe */
 
