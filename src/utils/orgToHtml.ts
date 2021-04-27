@@ -4,6 +4,10 @@ import inspectUrls from 'rehype-url-inspector'
 
 import orgParse from 'uniorg-parse'
 import org2rehype from 'uniorg-rehype'
+import compact from 'lodash/compact'
+import {includes} from 'lodash'
+
+const fileIdToPath: {[key: string]: string} = {}
 
 const processor = unified()
   .use(orgParse)
@@ -21,6 +25,19 @@ export default async function orgToHtml(file: any) {
   }
 }
 
+interface NodeProperty {
+  type: 'node-property'
+  key: string
+  value: any
+}
+
+interface Node {
+  type: string
+  contentsBegin: number
+  contentsEnd: number
+  children: NodeProperty[]
+}
+
 /**
  * Extract all `#+KEYWORD`'s from org post and attach them to
  * `file.data`.
@@ -29,6 +46,19 @@ function extractExportSettings() {
   return transformer
 
   function transformer(node: any, file: any) {
+    visit(node, 'property-drawer', (prop: any, index, parent) => {
+      // if the parents contentsBegin is 0 we know its the first one
+
+      if (parent?.type === 'section' && parent.contentsBegin === 0) {
+        prop.children.forEach((child: NodeProperty) => {
+          const key = child.key.toLowerCase()
+          file.data[key] = child.value
+          if (key === 'id') {
+            fileIdToPath[child.value] = file.data.slug
+          }
+        })
+      }
+    })
     // Visit every keyword in the org file and copy its value to the
     // file. file is then returned from processor.process, so all
     // keywords are available outside.
@@ -66,8 +96,22 @@ function processUrl({
       let href = url.pathname.replace(/\.org$/, '')
       node.properties[propertyName] = href
 
-      file.data.links = file.data.links || []
+      file.data.links = file.data.links ?? []
       file.data.links.push(href)
+    } else if (url.protocol === 'id:') {
+      let path = fileIdToPath[url.pathname]
+      if (
+        process.env.NODE_ENV === 'development' &&
+        file.data.published &&
+        typeof path === 'undefined'
+      ) {
+        console.error(`Unresolved link in ${file.data.slug}`)
+      } else {
+        let href = `/notes/${path}`
+        node.properties[propertyName] = href
+        file.data.links = file.data.links ?? []
+        file.data.links.push(path)
+      }
     }
   } catch (e) {
     // This can happen if org file contains an invalid string, that

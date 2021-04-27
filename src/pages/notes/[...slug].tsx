@@ -3,7 +3,7 @@ import Head from 'next/head'
 import {getAllPaths} from 'utils/org.server'
 import Rehype from 'components/rehype'
 import {GetStaticProps} from 'next'
-import {last, map} from 'lodash'
+import {first, map, compact} from 'lodash'
 import Articles from 'components/articles'
 import {getPost} from 'utils/post.server'
 
@@ -54,9 +54,12 @@ export const getStaticPaths = async () => {
 
 interface Props {}
 
-export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
+export const getStaticProps: GetStaticProps<Props> = async ({
+  params,
+  ...rest
+}) => {
   const slug =
-    typeof params?.slug == 'object' ? params?.slug.join('') : params?.slug
+    typeof params?.slug == 'object' ? params?.slug.join('/') : params?.slug
   if (!slug) {
     return {
       redirect: {
@@ -65,30 +68,32 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
       },
     }
   }
-
   const post = await getPost(slug)
 
-  if (!post) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    }
-  }
+  // if (!post) {
+  //   return {
+  //     redirect: {
+  //       destination: '/',
+  //       permanent: false,
+  //     },
+  //   }
+  // }
 
   const data = post.data
 
-  const backlinks = (await Promise.all(
-    map(data.backlinks, (path: string) => {
-      if (path) {
-        const slug = last(path.split('/'))
-        if (slug) {
-          return getPost(slug)
+  const backlinks = compact(
+    await Promise.all(
+      map(data.backlinks, (path: string) => {
+        if (path) {
+          // exclude the /notes/ part of the url
+          const slug = first(path.match(/(?<=\/notes\/)(.*)/))
+          if (slug) {
+            return getPost(slug)
+          }
         }
-      }
-    }),
-  )) as any
+      }),
+    ),
+  ) as any
 
   return {
     props: {

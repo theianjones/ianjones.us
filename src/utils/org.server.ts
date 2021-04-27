@@ -21,6 +21,7 @@ const pagesDirectory = path.join(
 const processor = trough()
   .use(collectFiles)
   .use(processPosts)
+  // .use(populateIds)
   .use(populateBacklinks)
 
 interface VFile {
@@ -50,7 +51,8 @@ function collectFiles(root: any) {
           reject(err)
         } else {
           files.forEach((f: any) => {
-            const slug = path.relative(root, f.path).replace(/\.org$/, '')
+            let slug = path.relative(root, f.path).replace(/\.org$/, '')
+            slug = slug.replace(/\./g, '/')
             f.data.slug = slug
             f.data.path = `${get(
               process,
@@ -84,6 +86,30 @@ async function processPosts(files: any) {
   }
 }
 
+function populateIds(files: any) {
+  files.forEach((file: any) => {
+    if (
+      process.env.PUBLISHED_ATTRIBUTE &&
+      get(file.data, process.env.PUBLISHED_ATTRIBUTE) === 'true'
+    ) {
+      let data: {[key: string]: string} = {}
+      file.contents.split('\n').some((subString: string) => {
+        if (subString === ':PROPERTIES:' || subString === ':END:') {
+          return subString === ':END:'
+        }
+        const match = subString.match(/:(.*?):(?<=:.*?:)(.*)/)
+        if (match) {
+          const [_, key, value] = match
+          data[key] = value.trim()
+        }
+      })
+      file.data = {...file.data, ...data}
+    }
+  })
+
+  return files
+}
+
 // Assign all collected backlinks to file. This function should be
 // called after all pages have been processed---otherwise, it might
 // miss backlinks.
@@ -95,14 +121,24 @@ function populateBacklinks(files: any) {
       get(file.data, process.env.PUBLISHED_ATTRIBUTE) === 'true'
     ) {
       file.data.links = file.data.links || new Set()
-      file.data.backlinks = backlinks[file.data.path] =
-        backlinks[file.data.path] || new Set()
+      file.data.backlinks = backlinks[file.data.slug] =
+        backlinks[file.data.slug] || new Set()
 
       file.data.links.forEach((other: any) => {
         backlinks[other] = backlinks[other] || new Set()
         backlinks[other].add(file.data.path)
       })
     }
+    // if (file.data.slug === 'product/script-kit') {
+    //   console.log(file)
+    // }
+    // if (
+    //   file.data.slug === 'lang/bash' ||
+    //   file.data.slug === 'lang/javascript' ||
+    //   file.data.slug === 'lang/io'
+    // ) {
+    //   console.log(file)
+    // }
   })
 }
 

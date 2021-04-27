@@ -13,7 +13,12 @@ const processor = unified()
     createElement: React.createElement,
     Fragment: React.Fragment,
     components: {
-      a: Link,
+      a: (props: any) => {
+        if (props.href.match(/id:/)) {
+          return <>{props.children}</>
+        }
+        return <Link {...props} />
+      },
     },
   })
   .use(highlight)
