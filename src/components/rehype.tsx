@@ -14,7 +14,7 @@ const processor = unified()
     Fragment: React.Fragment,
     components: {
       a: (props: any) => {
-        if (props.href.match(/id:/)) {
+        if (props.href.match(/id:/) || props.href.match(/undefined/)) {
           return <>{props.children}</>
         }
         return <Link {...props} />
