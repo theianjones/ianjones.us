@@ -70,14 +70,14 @@ export const getStaticProps: GetStaticProps<Props> = async ({
   }
   const post = await getPost(slug)
 
-  // if (!post) {
-  //   return {
-  //     redirect: {
-  //       destination: '/',
-  //       permanent: false,
-  //     },
-  //   }
-  // }
+  if (!post) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
 
   const data = post.data
 
