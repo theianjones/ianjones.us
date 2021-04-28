@@ -101,9 +101,7 @@ function processUrl({
     } else if (url.protocol === 'id:') {
       const id = url.pathname
       let path = generateFileSlug(get(fileIdToPath, id))
-      if (file.data.slug == 'lang/io') {
-        console.log(path, id)
-      }
+
       if (
         process.env.NODE_ENV === 'development' &&
         file.data.published &&
