@@ -33,6 +33,24 @@ interface VFile {
   dirname: string
 }
 
+export function generateFileSlug(
+  filePath?: string,
+  root = '/Users/ianjones/Code/blog-5.0/org-roam',
+) {
+  if (!filePath) {
+    return
+  }
+  const slug = path.relative(root, filePath).replace(/\.org$/, '')
+  return slug.replace(/\./g, '/')
+}
+
+export function generateNotePathFromFilePath(filePath?: string, root?: string) {
+  if (filePath) {
+    const slug = generateFileSlug(filePath, root)
+    return `/notes/${slug}`
+  }
+}
+
 function collectFiles(root: any) {
   return new Promise((resolve, reject) => {
     findDown.all(

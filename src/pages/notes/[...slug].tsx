@@ -81,12 +81,14 @@ export const getStaticProps: GetStaticProps<Props> = async ({
 
   const data = post.data
 
+  console.log(data)
   const backlinks = compact(
     await Promise.all(
       map(data.backlinks, (path: string) => {
         if (path) {
           // exclude the /notes/ part of the url
           const slug = first(path.match(/(?<=\/notes\/)(.*)/))
+          console.log(slug)
           if (slug) {
             return getPost(slug)
           }
@@ -94,6 +96,8 @@ export const getStaticProps: GetStaticProps<Props> = async ({
       }),
     ),
   ) as any
+
+  console.log(backlinks)
 
   return {
     props: {

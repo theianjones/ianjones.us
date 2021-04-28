@@ -4,10 +4,10 @@ import inspectUrls from 'rehype-url-inspector'
 
 import orgParse from 'uniorg-parse'
 import org2rehype from 'uniorg-rehype'
-import compact from 'lodash/compact'
-import {includes} from 'lodash'
-
-const fileIdToPath: {[key: string]: string} = {}
+import get from 'lodash/get'
+import assign from 'lodash/assign'
+import fileIdToPath from './org-roam-files'
+import {generateFileSlug, generateNotePathFromFilePath} from './org.server'
 
 const processor = unified()
   .use(orgParse)
@@ -54,7 +54,7 @@ function extractExportSettings() {
           const key = child.key.toLowerCase()
           file.data[key] = child.value
           if (key === 'id') {
-            fileIdToPath[child.value] = file.data.slug
+            assign(fileIdToPath, {[child.value]: file.history[0]})
           }
         })
       }
@@ -99,13 +99,17 @@ function processUrl({
       file.data.links = file.data.links ?? []
       file.data.links.push(href)
     } else if (url.protocol === 'id:') {
-      let path = fileIdToPath[url.pathname]
+      const id = url.pathname
+      let path = generateFileSlug(get(fileIdToPath, id))
+      if (file.data.slug == 'lang/io') {
+        console.log(path, id)
+      }
       if (
         process.env.NODE_ENV === 'development' &&
         file.data.published &&
         typeof path === 'undefined'
       ) {
-        console.error(`Unresolved link in ${file.data.slug}`)
+        // console.debug(`Unresolved link in ${file.data.slug}`)
       } else {
         let href = `/notes/${path}`
         node.properties[propertyName] = href
