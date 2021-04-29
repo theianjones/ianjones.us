@@ -33,20 +33,21 @@ interface VFile {
   dirname: string
 }
 
-export function generateFileSlug(
-  filePath?: string,
-  root = '/Users/ianjones/Code/blog-5.0/org-roam',
-) {
+export function generateFileSlug(filePath?: string) {
   if (!filePath) {
     return
   }
+  const root =
+    process.env.NODE_ENV === 'production'
+      ? '/opt/build/repo/org-roam'
+      : '/Users/ianjones/Code/blog-5.0/org-roam'
   const slug = path.relative(root, filePath).replace(/\.org$/, '')
   return slug.replace(/\./g, '/')
 }
 
-export function generateNotePathFromFilePath(filePath?: string, root?: string) {
+export function generateNotePathFromFilePath(filePath?: string) {
   if (filePath) {
-    const slug = generateFileSlug(filePath, root)
+    const slug = generateFileSlug(filePath)
     return `/notes/${slug}`
   }
 }
