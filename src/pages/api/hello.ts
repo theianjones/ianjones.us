@@ -1,8 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
 import {NextApiRequest, NextApiResponse} from 'next'
+import {PrismaClient} from '@prisma/client'
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
+const prisma = new PrismaClient()
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const links = await prisma.links.count()
+  console.log(links)
   res.statusCode = 200
-  res.json({name: 'John Doe'})
+  res.json({links})
 }
