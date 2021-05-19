@@ -8,7 +8,7 @@ import Document, {
 } from 'next/document'
 import {extractCritical} from 'emotion-server'
 import Header from 'components/header'
-
+import {GA_TRACKING_ID} from 'utils/gtag'
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx)
@@ -34,6 +34,22 @@ export default class MyDocument extends Document {
           <link
             rel="icon"
             href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/271/cloud-with-lightning-and-rain_26c8-fe0f.png"
+          />
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_TRACKING_ID}', {
+              page_path: window.location.pathname,
+            });
+          `,
+            }}
           />
         </Head>
         <body className="dark:bg-gray-900 container">
