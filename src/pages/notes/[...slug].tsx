@@ -6,6 +6,7 @@ import {GetStaticProps} from 'next'
 import {first, map, compact} from 'lodash'
 import Articles from 'components/articles'
 import {getPost} from 'utils/post.server'
+import SEO from 'components/seo'
 
 const Note = ({title, hast, resourceLink, backlinks}: any) => {
   return (
@@ -13,7 +14,8 @@ const Note = ({title, hast, resourceLink, backlinks}: any) => {
       <Head>
         <title>{title}</title>
       </Head>
-      <main className="">
+      <SEO metaData={title} isBlogPost />
+      <main>
         <h1
           className={`text-5xl md:text-5xl font-semibold my-12 text-gray-800 dark:text-gray-300 font-serif ${
             resourceLink ? 'mb-3' : 'mb-6'
