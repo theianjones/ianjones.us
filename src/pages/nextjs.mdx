@@ -1,0 +1,22 @@
+# Next.JS
+
+## Link Component
+
+One main caveat with the `<Link/>` component in Next.js is that you must pass it an `<a>` tag as a child.
+
+```jsx
+import Link from 'next/link'
+;<Link href="/next-page">
+  <a>Next Page</a>
+</Link>
+```
+
+The `href` goes on the `Link` component while any `onClick` or `className` must go on the inner `a` tag.
+
+```jsx
+<Link href="/next-page">
+  <a className="prose bg-black" onClick={console.log}>
+    Next Page
+  </a>
+</Link>
+```

@@ -21,11 +21,6 @@ function Header() {
             Courses
           </a>
         </Link>
-        <Link href={'/notes'}>
-          <a className="dark:text-gray-300 mr-3 prose-xl font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
-            Notes
-          </a>
-        </Link>
         <Link href={'/about-me'}>
           <a className="dark:text-gray-300 prose-xl font-light hover:text-primary ease-in-out text-gray-500 tracking-wider">
             About Me
