@@ -22,7 +22,7 @@ const Projects = () => {
       {projects.map((project) => (
         <>
           <a
-            className="max-w-xs mr-5 mb-5 p-4 transition-all ease-in-out duration-300"
+            className="max-w-xs mr-5 mb-5 p-4 transition-all ease-in-out duration-300 flex-auto"
             key={project.title}
             href={project.url}
             aria-label={`View ${project.title}`}

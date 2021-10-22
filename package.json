@@ -6,7 +6,6 @@
     "dev": "next dev",
     "build": "NODE_ENV=production next build",
     "postbuild": "NODE_ENV=production next-sitemap",
-    "build:content": "git submodule update --remote",
     "start": "next start",
     "test": "jest --watch"
   },

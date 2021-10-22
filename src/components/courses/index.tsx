@@ -7,10 +7,10 @@ const getCourses = (filter = identity) => {
 const Courses = () => {
   const courses = getCourses()
   return (
-    <div className="flex md:flex-row flex-wrap flex-column items-center justify-center">
+    <div className="h-100 flex md:flex-row flex-wrap flex-column items-center justify-center">
       {courses.map((course: any) => (
         <a
-          className="max-w-xs mr-5 mb-5 p-4 transition-all ease-in-out duration-300 border-gray-400 rounded-md shadow-sm hover:shadow-xl"
+          className="h-100 max-w-xs mr-5 mb-5 p-4 transition-all ease-in-out duration-300 border-gray-400 rounded-md shadow-sm hover:shadow-xl"
           key={course.id || course.slug}
           href={course.http_url}
           aria-label={`View ${course.title}`}
