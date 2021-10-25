@@ -2,6 +2,8 @@
 
 ## Link Component
 
+[Link Documentation](https://nextjs.org/docs/migrating/from-react-router)
+
 One main caveat with the `<Link/>` component in Next.js is that you must pass it an `<a>` tag as a child.
 
 ```jsx
@@ -20,3 +22,53 @@ The `href` goes on the `Link` component while any `onClick` or `className` must 
   </a>
 </Link>
 ```
+
+## Build
+
+[Next Config Documentation](https://nextjs.org/docs/api-reference/next.config.js/introduction)
+
+Next.js implements webpack under the hood. This means that we can rely on the Next.js team to manage this dependency for us. They give us a bunch of defaults and escape hatches customize to our particular use case.
+
+With the Next.js build system comes their plugin system. This allows us to leverage tools like Sentry with minimal custom configuration. In a broader sense, Next.js will allow us to use community approved solutions to common web application problems.
+
+## Application Infrastructure
+
+Next.js implements file system routing in the `src/pages/` directory. This means that we dont have to rely on `React Router` or any other router solution. Along with filesystem routing comes `next/link`. This component will pre-fetch javascript and assets that the `Link` component routes to when the `Link` component is in the viewport.
+
+Each file inside of `src/pages/` will be code split so that the most minimal amount of javascript is loaded on each page. We can use `dynamic code imports` to further optimize load time if we want to fine tune a page ([dynamic import example](https://github.com/vercel/next.js/tree/canary/examples/with-dynamic-import)).
+
+## Image Optimization
+
+[Next Image Documentation](https://nextjs.org/docs/basic-features/image-optimization)
+
+Next.JS will load all of the images in our app and serve them up with a `srcset`. `srcset` will take several different image paths and sizes to dynamically render the image that matches the current browser width. This makes sure we aren't displaying a 1200px image to a 500px wide view port ([mdn docs on srcset](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-sizes)).
+
+Next.js will also convert the images to `webp` format (read more about [webp here](https://99designs.com/blog/tips/webp-image-format/)). This compression format is ~25% the size of `png` or `jpeg` at the same quality.
+
+## Script Optimization
+
+[Next Script Documentation](https://nextjs.org/docs/basic-features/script)
+
+Next gives us a `Script` component that allows us to control when 3rd party scripts get executed. This is useful for trackers like Facebook and Google Analytics because we want them to load after the application is interactive.
+
+## Data Fetching
+
+Next.js runs on a node server. This gives use advantages for loading data. Next provides each `page` 2 hooks to run data fetching on:
+
+- `getStaticProps`
+  - `getStaticPaths`
+- `getServerSideProps`
+
+[getStaticProps docs](https://nextjs.org/docs/basic-features/data-fetching#getstaticprops-static-generation)
+
+`getStaticProps` is called at build time on the server. It's not called on the client side. This hook is good for building static pages that require some data that doesnt change very often. Often data that comes from a cms or publicly cached data.
+
+If we hypothetically had millions of pages that are using this hook, we can skip them during build time (with `fallback: true`). This will generate the static html on the server when the page is requested and be cached for further requests.
+
+Next.js also provides incremental static regeneration where you can set an interval for a page to regenerate its static contents.
+
+`getStaticPaths` is needed when you have a dynamic route (like `/pages/posts/[id].tsx`) and each of these post pages needs to be built individually.
+
+[getServerSideProps docs](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
+
+`getServerSideProps` can be used when you need to pre-render a page but the data is fetched at request time.
