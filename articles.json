@@ -1,0 +1,29 @@
+{
+  "articles": [
+    {
+      "slug": "nextjs",
+      "title": "Next.js",
+      "lastUpdated": "Oct 25th, 2021"
+    },
+    {
+      "slug": "xstate-saves-our-bacon",
+      "title": "Xstate Saves the Bacon 🥓",
+      "lastUpdated": "Oct 23rd, 2020"
+    },
+    {
+      "slug": "stop-thinking-in-lifecycle-methods",
+      "title": "Stop Thinking In Lifecycle Methods",
+      "lastUpdated": "Oct 10th, 2019"
+    },
+    {
+      "slug": "own-your-second-brain",
+      "title": "Own Your Second Brain 🧠",
+      "lastUpdated": "May 13th, 2020"
+    },
+    {
+      "slug": "brief-introduction-to-gatsby-themes",
+      "title": "A Brief Introduction to Gatsby Themes",
+      "lastUpdated": "May 20th, 2019"
+    }
+  ]
+}

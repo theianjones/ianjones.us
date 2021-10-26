@@ -1,0 +1,78 @@
+# Stop Thinking in Lifecycle Methods
+
+## The Problem
+
+I hear a lot about how to translate class lifecycle methods into hooks. I think this can be helpful at first explaining them but harmful in the long run if this is the only way you think about hooks.
+
+componentDidMount is a lifecycle method that can trip you up if you try to implement it with hooks. You want something to run just once and set some values in your component state.
+
+Say a component took a user id and called some endpoint to load the user:
+
+```js
+function User({id}) {
+  const [user, setUser] = React.useState()
+  React.useEffect(async () => {
+    const userResult = await axios.get(`/users/${id}`)
+    const {data} = userResult
+    setUser(user)
+  }, [])
+  return <div>{user ? user.name : 'loading...'}</div>
+}
+```
+
+This looks fine if you are thinking about components in a class lifecycle way. There is a subtle bug here though. Say someone navigated away through React Router and changed pages without re-rendering this component. This effect wouldn't re-run. If you landed on another users page, the old data would be there until a page refresh occured.
+
+## The Explaination
+
+We need to think of react hooks in a new way. Don't build your hooks like you would your class components. Think of our components in effects and state. Our useEffects allow us to sync our effects with our state.
+
+In this case, our state is the user inside of the component. We fire off an effect so that we can eventually load the user into state. This effect has an id dependency. Thus, we need to add that to our dependency array:
+
+```js
+function User({id}) {
+  const [user, setUser] = React.useState()
+  React.useEffect(async () => {
+    const userResult = await axios.get(`/users/${id}`)
+    const {data} = userResult
+    setUser(user)
+  }, [id])
+  return <div>{user ? user.name : 'loading...'}</div>
+}
+```
+
+If your effects are interacting with your state and changing it, then you need to make sure that effect runs every time your state changes.
+
+The Solution
+Luckily, we can have our code editor tell us when we are using state inside of an effect.
+
+The React team has built an eslint plugin that checks the state you use in an effect and makes sure that state is also in the dependency array.
+
+If you are using a recent version of CRA, then you already have this eslint rule installed!
+
+The eslint plugin for React hooks can save you from introducing subtle bugs into your application.
+
+`yarn add eslint-plugin-react-hooks --dev`
+
+The react team suggests this configuration:
+
+```js
+{
+  "plugins": [
+    // ...
+    "react-hooks"
+  ],
+  "rules": {
+    // ...
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  },
+  // I had to add this for my set up
+  "parserOptions": {
+    "ecmaVersion": 7,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  }
+}
+```
