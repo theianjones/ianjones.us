@@ -1,0 +1,14 @@
+# Yarn Link with Vite
+
+When you are developing an npm module, you dont want to have to publish your changes every time you need to test it.
+
+If you have an application you are using to develop your module in, you can use `yarn link` in the module directory. This tells yarn that other projects on your computer can link to this local version.
+
+Inside of your project, you can run `yarn link moduleName` and it will start using the local version.
+
+With Vite however, this doesnt work out of the box. It seems that Vite caches dependencies in its `node_modules/.vite` folder. You need to remove this folder and restart your dev server to get the link to work.
+
+```
+rm -rf node_modules/.vite
+yarn vite
+```

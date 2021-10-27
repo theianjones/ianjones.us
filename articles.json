@@ -1,6 +1,11 @@
 {
   "articles": [
     {
+      "slug": "yarn-link-with-vite",
+      "title": "Yarn Link with Vite",
+      "lastUpdated": "Oct 27th, 2021"
+    },
+    {
       "slug": "nextjs",
       "title": "Next.js",
       "lastUpdated": "Oct 25th, 2021"
