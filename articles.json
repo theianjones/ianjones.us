@@ -1,6 +1,11 @@
 {
   "articles": [
     {
+      "slug": "amplify",
+      "title": "Amplify Notes",
+      "lastUpdated": "Nov 16th, 2021"
+    },
+    {
       "slug": "review-your-own-prs",
       "title": "Review Your Own Pull Requests",
       "lastUpdated": "Oct 28th, 2021"
@@ -12,7 +17,7 @@
     },
     {
       "slug": "nextjs",
-      "title": "Next.js",
+      "title": "Next.js Notes",
       "lastUpdated": "Oct 25th, 2021"
     },
     {
