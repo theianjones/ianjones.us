@@ -1,0 +1,92 @@
+# Amplify
+
+## Change The Node Version on amplify
+
+The default build image (`Amazon Linux:2`) that ships with `amplify` has `nvm` installed to change your node version during your build.
+
+If you dont have an `amplify.yml` file, you can download a started from the "Build settings" tab in your aws amplify console.
+
+Inside of you `amplify.yml` you can add commands to run before your build:
+
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 14
+        - nvm use 14
+        - yarn install
+    build:
+      commands:
+        - yarn run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
+
+Now you should be ready to rock and roll on your build.
+
+## Add public environment variables to a .env
+
+The first step is to add environment variables to via the "Environment variables" tab in the aws amplify console.
+
+Now any variable created there can be referenced by `$YOUR_VARIABLE_NAME` in your `amplify.yml`.
+
+We can add these variables by running some bash lines to echo them into a `.env` file.
+
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "NEXT_PUBLIC_OAUTH_URL=$NEXT_PUBLIC_OAUTH_URL" >> .env
+        - nvm install 14
+        - nvm use 14
+        - yarn install
+    build:
+      commands:
+        - yarn run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
+
+Inside of this Next.js app, I can use `process.env.NEXT_PUBLIC_OAUTH_URL` to access the value.
+
+## Install private npm modules on a github registry
+
+Much like above, you need to add your auth token to your aws environment variables then add these lines to your `amplify.yml` file.
+
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "NEXT_PUBLIC_OAUTH_URL=$NEXT_PUBLIC_OAUTH_URL" >> .env
+        - nvm install 14
+        - nvm use 14
+        - echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+        - echo "@crossfit:registry=https://npm.pkg.github.com" >> .npmrc
+        - yarn install
+    build:
+      commands:
+        - yarn run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
