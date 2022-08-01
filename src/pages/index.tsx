@@ -62,7 +62,8 @@ export default function Home({articles}: {articles: Post[]}) {
           articles={articles.filter(
             (article: Post) =>
               article.slug === 'own-your-second-brain' ||
-              article.slug === 'xstate-saves-our-bacon',
+              article.slug === 'xstate-saves-our-bacon' ||
+              article.slug === 'fold',
           )}
         />
       </section>

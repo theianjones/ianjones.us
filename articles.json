@@ -1,6 +1,11 @@
 {
   "articles": [
     {
+      "slug": "fold",
+      "title": "Clojure Fold",
+      "lastUpdated": "August 1st, 2022"
+    },
+    {
       "slug": "amplify",
       "title": "Amplify Notes",
       "lastUpdated": "Nov 16th, 2021"
