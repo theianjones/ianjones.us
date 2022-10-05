@@ -11,13 +11,19 @@
     "image": "https://res.cloudinary.com/dzsq0psas/image/upload/v1617477702/blog/Image_2021-04-03_at_2.47.56_PM_luuqqv.png",
     "description": "I’ve worked on egghead for the past 5 years of my career. I’ve helped build out our HATEOAS API using Ruby on Rails to do so. I’ve worked with integrating many different services such as Stripe, Convertkit and Transloadit.",
     "tags": ["ruby", "react"],
-    "url": "https://egghead.io"
+    "url": "https://egghead.io?af=ay44db"
   },
   {
     "title": "GraphQL Course",
     "image": "https://res.cloudinary.com/dzsq0psas/image/upload/v1617477726/blog/Image_2021-04-03_at_3.22.01_PM_lqa2ua.png",
     "description": "I teamed up with the egghead.io production team to produce this GraphQL course. I take the learner from very little GraphQL knowledge to using mutations and subscriptions to build a real time messaging application.",
     "tags": ["graphql", "react"],
-    "url": "https://egghead.io/courses/react-real-time-messaging-with-graphql-using-urql-and-onegraph-be5a"
+    "url": "https://egghead.io/courses/react-real-time-messaging-with-graphql-using-urql-and-onegraph-be5a?af=ay44db"
+  },
+  { "title": "Remix Course",
+    "image": "https://egghead.io/_next/image?url=https%3A%2F%2Fd2eip9sf3oo6c2.cloudfront.net%2Fplaylists%2Fsquare_covers%2F000%2F587%2F311%2Fsquare_480%2Fegh_remix-social-media-app_2000.png&w=640&q=100",
+    "description": "I produced a Remix course with egghead. I paired up with a voice coach to enhance my recording and script writing skills. This course goes over how to set up a SaaS project with authentication, a data store, and a Remix Server.",
+    "tags": ["react"],
+    "url": "https://egghead.io/courses/learn-remix-by-building-a-social-media-platform-with-typescript-and-prisma-cddb0550?af=ay44db"
   }
 ]

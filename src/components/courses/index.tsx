@@ -12,7 +12,7 @@ const Courses = () => {
         <a
           className="h-100 max-w-xs mr-5 mb-5 p-4 transition-all ease-in-out duration-300 border-gray-400 rounded-md shadow-sm hover:shadow-xl"
           key={course.id || course.slug}
-          href={course.http_url}
+          href={`${course.http_url}?af=ay44db`}
           aria-label={`View ${course.title}`}
         >
           <img
