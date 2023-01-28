@@ -5,14 +5,7 @@ const nextConfig = {
   reactStrictMode: true,
   target: 'serverless',
   async redirects() {
-    return [
-      {
-        source: '/course/remix',
-        destination:
-          'https://egghead.io/courses/learn-remix-by-building-a-social-media-platform-with-typescript-and-prisma-cddb0550?af=ay44db', // Matched parameters can be used in the destination
-        permanent: true,
-      },
-    ]
+    return []
   },
 }
 
