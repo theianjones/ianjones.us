@@ -33,9 +33,9 @@ export default function Home({articles}: {articles: Post[]}) {
           </h1>
           <p className="mt-12 prose-xl dark:text-gray-300 md:w-3/4 w-100">
             👋 I'm Ian. I am a web developer from the Pacific North West but
-            currently live in Northern Virginia. I love digital gardening and
-            programming computers. I work primarily in Ruby and JavaScript but
-            love functional programming languages.
+            currently live in Boise Idaho. I love digital gardening and
+            programming computers. I work primarily in Clojure and JavaScript
+            but love functional programming languages.
           </p>
         </div>
         <div>
