@@ -61,8 +61,8 @@ export default function Home({articles}: {articles: Post[]}) {
         <Articles
           articles={articles.filter(
             (article: Post) =>
-              article.slug === 'own-your-second-brain' ||
-              article.slug === 'xstate-saves-our-bacon' ||
+              article.slug === 'cypress' ||
+              article.slug === 'integration-testing' ||
               article.slug === 'fold',
           )}
         />

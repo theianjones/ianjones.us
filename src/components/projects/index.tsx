@@ -16,7 +16,7 @@ interface Project {
 }
 
 const Projects = () => {
-  const projects = getProjects()
+  const projects = getProjects((p: Project) => p.title.includes('Remix'))
   return (
     <div className="grid-cols-3 gap-4 grid">
       {projects.map((project) => (
