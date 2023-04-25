@@ -1,0 +1,187 @@
+# Cypress
+
+Useful cypress features for [Integration Testing](./integration-testing)
+
+## Installation
+
+[Follow the guide, I have nothing useful to add 😄](https://docs.cypress.io/guides/getting-started/installing-cypress)
+
+## Testing Library Syntax
+
+Heres some cypress tests written in regular cypress syntax:
+
+```js
+describe('Basic Cypress Test', () => {
+  it('Verify Somethings on the page', () => {
+    cy.visit('https://ianjones.us/')
+    cy.get('h1').should('contain', 'Fullstack developer')
+  })
+
+  it('You can click things on the page', () => {
+    cy.visit('https://ianjones.us/')
+    cy.get("[aria-label='View Remix Course']").click()
+  })
+
+  it('You can fill out forms', () => {
+    cy.visit('https://egghead.io/pricing')
+    cy.get("[name='email']").type(`ianjones@gmail.com`)
+  })
+})
+```
+
+This syntax is fine, but I prefer using Testing Library Syntax as it expresses the intent of what the user is trying to do when writing out functions.
+
+```js
+describe('Testing Library Syntax', () => {
+  it('Verify Somethings on the page', () => {
+    cy.visit('https://ianjones.us/')
+    cy.findByText(/fullstack developer/i).should('exist')
+  })
+
+  it('You can click things on the page', () => {
+    cy.visit('https://ianjones.us/')
+    cy.findByLabelText(/view remix course/i).click()
+  })
+
+  it('You can fill out forms', () => {
+    cy.visit('https://egghead.io/pricing')
+    cy.findByText(/email/i).type('ianjones@gmail.com')
+  })
+})
+```
+
+You can install the [Testing Library syntax by following their docs](https://testing-library.com/docs/cypress-testing-library/intro/).
+
+## Use Cypress Commands
+
+Cypress commands allow you to package up common functionality into a single method call to cypress.
+
+A `support/commands.js` file is generated when you install cypress. You can add a command like this:
+
+```js
+Cypress.Commands.add('navigateAndFillSignup', (email) => {
+  cy.visit('https://egghead.io/pricing')
+  cy.findByText(/email/i).type(email)
+})
+```
+
+Now in my test file, I can use the Cypress command:
+
+```js
+describe('Commands', () => {
+  it('You can fill out forms', () => {
+    cy.navigateAndFillSignup('ianjones@gmail.com')
+  })
+})
+```
+
+## HTTP Intercepts ⭐️
+
+Intercepts allow you to mock out HTTP calls and return whatever you want back. This is useful to test out different state of your UI depending on what the server returns.
+
+```js
+describe('Cypress intercepts', () => {
+  it('should be able intercepts requests', () => {
+    cy.visit('https://mysite.com')
+    cy.fillOutSignUpForm(email, 'Password123!')
+    cy.intercept('POST', '/graphql', {
+      statusCode: 200,
+      body: {
+        data: {
+          signUp: {
+            id: 1,
+            email: 'intercepted@cypress.com',
+          },
+        },
+      },
+    })
+    cy.findByRole('button', {name: /sign up/i}).click()
+  })
+  it('should be able intercept individual graphql requests', () => {
+    cy.visit('https://mysite.com')
+    cy.fillOutSignUpForm(email, 'Password123!')
+    cy.intercept(
+      {
+        method: 'POST',
+        url: '/graphql',
+      },
+      (req) => {
+        if (req.body.operationName === 'SignUpUser') {
+          req.reply({
+            statusCode: 200,
+            body: {
+              data: {
+                signUp: {
+                  id: 1,
+                  email: 'intercepted@cypress.com',
+                },
+              },
+            },
+          })
+        }
+      },
+    ).as('signUp')
+    cy.intercept(
+      {
+        method: 'POST',
+        url: '/graphql',
+      },
+      (req) => {
+        if (req.body.operationName === 'me') {
+          req.reply({
+            statusCode: 200,
+            body: {
+              data: {
+                me: {
+                  id: 1,
+                  email: 'intercepted@cypress.com',
+                },
+              },
+            },
+          })
+        }
+      },
+    ).as('me')
+    cy.findByRole('button', {name: /sign up/i}).click()
+
+    cy.get('@signUp') // yields the same interception object
+      .its('request.body')
+      .should('deep.equal', {
+        query:
+          'mutation SignUpUser($userInfo: SignUpUserInput!) {\n  signUp(input: $userInfo) {\n    id\n    first_name\n    last_name\n    email\n    user_token\n    currentLoanApplication {\n      id\n      product\n      application_guid\n      __typename\n    }\n    __typename\n  }\n}\n',
+        operationName: 'SignUpUser',
+        variables: {
+          userInfo: {
+            email,
+            password: 'Password123!',
+            cosignerGuid: null,
+            product: null,
+          },
+        },
+      })
+
+    cy.get('@me') // yields the same interception object
+      .its('request.body')
+      .should('deep.equal', {
+        query:
+          'query me {\n  me {\n    ...UserFields\n    __typename\n  }\n}\n\nfragment UserFields on User {\n  id\n  first_name\n  last_name\n  email\n  user_token\n}\n',
+        operationName: 'me',
+        variables: {},
+      })
+  })
+
+  it('should be able intercept individual graphql requests with prebuilt fixtures', () => {
+    cy.visit('https://mysite.com')
+    cy.fillOutSignUpForm('intercepted@cypress.com', 'Password123!')
+    cy.intercept(
+      {
+        method: 'POST',
+        url: '/graphql',
+      },
+      {statusCode: 200, fixture: 'errors.json'},
+    ).as('error')
+    cy.findByRole('button', {name: /sign up/i}).click()
+    cy.findByText(/user already exists/i)
+  })
+})
+```

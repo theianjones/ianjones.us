@@ -1,7 +1,7 @@
 {
   "title": "Ian's Digital Garden",
   "titleTemplate": "%s | Ian",
-  "description": "Fullstack developer focused on React.JS and Ruby on Rails.",
+  "description": "Fullstack developer focused on React.JS and Clojure.",
   "favicon": "/favicon.ico",
   "additionalMetaTags": [
     {"property": "author", "content": "Ian Jones"},

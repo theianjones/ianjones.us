@@ -1,0 +1,17 @@
+# Integration Testing
+
+![](https://res.cloudinary.com/kentcdodds-com/image/upload/f_auto,q_auto,dpr_2.0,w_1600/v1622744540/kentcdodds.com/blog/the-testing-trophy-and-testing-classifications/trophy_wx9aen.png)
+
+[Image source](https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications)
+
+Most UI tests should center around integration testing. [Cypress](/cypress) is really good at end to end and integration testing so it makes a great tool for this.
+
+Here's the canonical tweet:
+
+<Tweet tweetId="807626710350839808" />
+
+Integration testing largely tests at the HTTP level. So you would test `GET /` instead of a component like `import Index from '.'` Testing in the browser also allows you to avoid mocking out unsupported browser features in a node environment. <SideNote idName="2">I have often found this to be the most annoying part of jest tests</SideNote>
+
+Integration tests with [Cypress](/cypress) allow me to test workflows in UI's without messing around with low level details.
+
+Often I really just want to mock data from HTTP requests and see how the interface responds to those cases.

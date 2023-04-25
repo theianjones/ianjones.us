@@ -1,6 +1,16 @@
 {
   "articles": [
     {
+      "slug": "cypress",
+      "title": "Cypress 🌲",
+      "lastUpdated": "April 25th, 2023"
+    },
+    {
+      "slug": "integration-testing",
+      "title": "Integration Testing",
+      "lastUpdated": "April 25th, 2023"
+    },
+    {
       "slug": "fold",
       "title": "Clojure Fold",
       "lastUpdated": "August 1st, 2022"
